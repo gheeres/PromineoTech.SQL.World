@@ -6,7 +6,10 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
+import java.util.Optional;
 import world.Configuration;
 import world.entity.CityEntity;
 import world.entity.CityInputEntity;
@@ -102,7 +105,7 @@ public class WorldMySqlDao extends MySqlDao {
             }
             
             CityEntity result = new CityEntity(id)
-                .setCountry(new CountryEntity())
+                .setCountry(new CountryEntity(input.getCountry()))
                 .setLatitude(input.getLatitude())
                 .setLongitude(input.getLongitude())
                 .setName(input.getName())
@@ -119,5 +122,105 @@ public class WorldMySqlDao extends MySqlDao {
       }
     }
     return null;
+  }
+  
+  /**
+   * Returns all of the available countries.
+   * @return The list of countries.
+   */
+  public List<CountryEntity> getCountries() {
+    try (Connection connection = getConnection()) {
+      String sql = "SELECT "
+                 + "  country_code, "
+                 + "  country_code2, "
+                 + "  country_name, "
+                 + "  continent, "
+                 + "  country_capital, "
+                 + "  country_population "
+                 + "FROM "
+                 + "  country "
+                 + "ORDER BY "
+                 + "  country_name;";
+      //System.out.printf("SQL: %s%n", sql);
+      try (PreparedStatement statement = 
+                             connection.prepareStatement(sql)) {
+        List<CountryEntity> countries = new ArrayList<CountryEntity>();
+        // read row by row
+        try(ResultSet rs = statement.executeQuery()) {
+          while(rs.next()) {
+            // serialize / convert rows and columns into a CountryEntity
+            CountryEntity country = toCountry(rs);
+            //if (country != null) {
+            if (Objects.nonNull(country)) {
+              countries.add(country);
+            }
+          }
+        }
+        
+        return countries;
+      }
+    }
+    catch (SQLException e) {
+      throw new DbException("Failed to get all countries.", e);
+    }
+  }
+  
+  /**
+   * Returns the specified country.
+   * @param code The unique ISO3166 code for the country. 
+   * @return The country if found, otherwise an empty optional.
+   */
+  public Optional<CountryEntity> getCountryByCode(String code) {
+    try (Connection connection = getConnection()) {
+      String sql = "SELECT "
+                 + "  country_code, "
+                 + "  country_code2, "
+                 + "  country_name, "
+                 + "  continent, "
+                 + "  country_capital, "
+                 + "  country_population "
+                 + "FROM "
+                 + "  country "
+                 + "WHERE country_code = ? ;";
+      //System.out.printf("SQL: %s%n", sql);
+      try (PreparedStatement statement = 
+                             connection.prepareStatement(sql)) {
+        statement.setString(1, code);
+        
+        try(ResultSet rs = statement.executeQuery()) {
+          if (rs.next()) {
+            CountryEntity country = toCountry(rs);
+            return Optional.ofNullable(country);
+          }
+        }
+        
+        return Optional.empty();
+      }
+    }
+    catch (SQLException e) {
+      String message = String.format("Failed to get requested country: %s", code);
+      throw new DbException(message, e);
+    }
+  }
+  
+  /**
+   * Serializes the current row into a CountryEntity instance.
+   * @param rs The current row
+   * @return The created instance.
+   */
+  protected CountryEntity toCountry(ResultSet rs) {
+    try {
+      //String code = rs.getString("country_code");
+      //CountryEntity country = new CountryEntity(code);
+      //country.setCode2(rs.getString("country_code2"));
+      //country.setName(rs.getString("country_name"));
+      //return country;
+      return new CountryEntity(rs.getString("country_code"))
+          .setCode2(rs.getString("country_code2"))
+          .setName(rs.getString("country_name"));
+    }
+    catch(SQLException e) {
+      throw new DbException("Failed to serialize row into CountryEntity.", e);
+    }
   }
 }

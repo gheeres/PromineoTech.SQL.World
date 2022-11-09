@@ -1,8 +1,10 @@
 package world;
 
+import java.util.List;
+import java.util.Optional;
+import java.util.Scanner;
 import world.dao.WorldMySqlDao;
-import world.entity.CityEntity;
-import world.entity.CityInputEntity;
+import world.entity.CountryEntity;
 
 public class Application {
   public Application() {
@@ -17,6 +19,7 @@ public class Application {
     worldDao.createSchema()
             .initializeData();
     
+    /*
     CityInputEntity input = new CityInputEntity()
         .setCountry("USA")
         .setName("Mosinee")
@@ -24,6 +27,25 @@ public class Application {
         .setLongitude(-89.7032f)
         .setPopulation(3988);
     CityEntity city = worldDao.addCity(input);
+    */
+    
+    List<CountryEntity> countries = worldDao.getCountries();
+    for(CountryEntity country: countries) {
+      System.out.println(country);
+    }
+    
+    System.out.println("Enter the country (XXX): ");
+    Scanner input = new Scanner(System.in);
+    String code = input.nextLine();
+    Optional<CountryEntity> optionalCountry = worldDao.getCountryByCode(code);
+    if (optionalCountry.isPresent()) {
+      CountryEntity country = optionalCountry.get();
+      System.out.println(country);
+    }
+    else {
+      System.out.printf("Requested country was not found. Code: %s%n", code);
+    }
+    
   }
   
   /**
