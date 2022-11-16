@@ -1,5 +1,6 @@
 package world;
 
+import java.util.List;
 import world.dao.WorldMySqlDao;
 import world.entity.CityEntity;
 import world.entity.CityInputEntity;
@@ -23,7 +24,12 @@ public class Application {
         .setLatitude(44.7930f)
         .setLongitude(-89.7032f)
         .setPopulation(3988);
-    CityEntity city = worldDao.addCity(input);
+    CityEntity addedCity = worldDao.addCity(input);
+    
+    List<CityEntity> cities = worldDao.getAllCities();
+    for(CityEntity city: cities) {
+      System.out.println(city);
+    }
   }
   
   /**

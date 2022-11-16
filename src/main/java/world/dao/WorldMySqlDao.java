@@ -6,6 +6,8 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
 import java.sql.Types;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 import world.Configuration;
 import world.entity.CityEntity;
@@ -73,8 +75,8 @@ public class WorldMySqlDao extends MySqlDao {
   
   /**
    * Adds the specified city information.
-   * @param city The city to create / add.
-   * @return The created city if successful, false if otherwise.
+   * @param input The city to create / add.
+   * @return The created city if successful, null if otherwise.
    */
   public CityEntity addCity(CityInputEntity input) {
     if (Objects.nonNull(input))  {
@@ -119,5 +121,47 @@ public class WorldMySqlDao extends MySqlDao {
       }
     }
     return null;
+  }
+
+  /**
+   * Returns all cities.
+   * @return The collection of cities.
+   */
+  public List<CityEntity> getAllCities() {
+    // Get connection
+    try (Connection connection = getConnection()) {
+      String sql = "SELECT "
+          + "  city.city_id, "
+          + "  city.country_code, "
+          + "  country.country_name, "
+          + "  city.city_name, "
+          + "  city.latitude, "
+          + "  city.longitude, "
+          + "  city.city_population "
+          + "FROM "
+          + "  city "
+          + "  INNER JOIN country "
+          + "  ON city.country_code = country.country_code "
+          + "ORDER BY"
+          + "  city.city_name";
+      System.out.printf("SQL: %s%n", sql);
+      //System.out.println("SQL: " + sql);
+      
+      try(PreparedStatement statement = connection.prepareStatement(sql)) {
+        try(ResultSet rs = statement.executeQuery()) {
+          List<CityEntity> cities = new ArrayList<CityEntity>();
+          while(rs.next()) {
+            CityEntity city = new CityEntity(rs.getInt("city_id"))
+                .setName(rs.getString("city_name"))
+                .setPopulation(rs.getInt("city_population"));
+            cities.add(city);
+          }
+          return cities;
+        }
+      }
+    }
+    catch(SQLException e) {
+      throw new DbException("Failed to get all cities.", e);
+    }
   }
 }
