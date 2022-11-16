@@ -3,13 +3,25 @@ package world.entity;
 /**
  * Represents a country in the world.
  */
-public class CountryEntity {
-  private String code;
+public class CountryEntity extends CountryBaseEntity {
   private String code2;
-  private String name;
+  private Integer population;
 
   public CountryEntity(String code) {
-    this.code = code;
+    super(code);
+  }
+
+  public CountryEntity(CountryBaseEntity country) {
+    super(country);
+  }
+
+  public Integer getPopulation() {
+    return population;
+  }
+
+  public CountryEntity setPopulation(Integer population) {
+    this.population = population;
+    return this;
   }
 
   public String getCode2() {
@@ -19,23 +31,5 @@ public class CountryEntity {
   public CountryEntity setCode2(String code2) {
     this.code2 = code2;
     return this;
-  }
-
-  public String getName() {
-    return name;
-  }
-
-  public CountryEntity setName(String name) {
-    this.name = name;
-    return this;
-  }
-
-  public String getCode() {
-    return code;
-  }
-  
-  @Override
-  public String toString() {
-    return String.format("[%s] %s", getCode(), getName());
   }
 }

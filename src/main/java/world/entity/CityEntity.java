@@ -5,7 +5,7 @@ package world.entity;
  */
 public class CityEntity {
   private int id;
-  private CountryEntity country;
+  private CountryBaseEntity country;
   private String name;
   private Float latitude;
   private Float longitude;
@@ -18,10 +18,10 @@ public class CityEntity {
   public int getId() {
     return id;
   }
-  public CountryEntity getCountry() {
+  public CountryBaseEntity getCountry() {
     return country;
   }
-  public CityEntity setCountry(CountryEntity country) {
+  public CityEntity setCountry(CountryBaseEntity country) {
     this.country = country;
     return this;
   }
