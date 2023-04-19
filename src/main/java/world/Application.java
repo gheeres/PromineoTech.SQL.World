@@ -3,6 +3,8 @@ package world;
 import java.util.Scanner;
 
 public class Application {
+  private Scanner input = new Scanner(System.in);
+  
   /**
    * Standard / main entry point for application.
    * @param args
@@ -19,6 +21,7 @@ public class Application {
    * @param args The optional command line arguments.
    */
   public void run(String[] args) {
-    Scanner input = new Scanner(System.in);
+    System.out.println("[Start]");
+    System.out.println("[End]");
   }
 }
