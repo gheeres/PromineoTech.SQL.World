@@ -1,19 +1,20 @@
 package world;
 
-import java.sql.Connection;
-import java.sql.SQLException;
+import java.util.List;
 import java.util.Scanner;
+
 import world.dao.CityDao;
 import world.dao.CityMySqlDao;
 import world.dao.CountryDao;
 import world.dao.CountryMySqlDao;
+import world.entity.CountryEntity;
 import world.service.DefaultWorldService;
 import world.service.WorldService;
 
 public class Application {
   private Scanner input = new Scanner(System.in);
   private WorldService service;
-  
+
   /**
    * Standard / main entry point for application.
    * @param args
@@ -23,10 +24,10 @@ public class Application {
   }
 
   public Application() {
-    //CountryDao countryDao = new CountryMySqlDao();
-    //CityDao cityDao = new CityMySqlDao();
+    CountryDao countryDao = new CountryMySqlDao();
+    CityDao cityDao = new CityMySqlDao();
     
-    //this.service = new DefaultWorldService(countryDao, cityDao);
+    this.service = new DefaultWorldService(countryDao, cityDao);
   }
   
   /**
@@ -36,21 +37,14 @@ public class Application {
   public void run(String[] args) {
     System.out.println("[Start]");
 
-    try {
-      System.out.println("Opening connection to database.");
-      Connection connection = new CountryMySqlDao().getConnection();
-      connection.close();
-      System.out.println("Connection closed.");
-    } catch (SQLException e) {
-      System.out.println("Failed to open database connection.");
+    String continent = "South America";
+    List<CountryEntity> countries = service.getAllCountries(continent);
+    for(CountryEntity country : countries) {
+      System.out.printf("[%s] %s%n", country.getCode(), country.getName());
+      // List<CityEntity> cities = service.getCitiesForCountry(country.getCountryCode());
+      // for(CityEntity city : cities) {
+      // }
     }
-    
-    //List<CountryEntity> countries = service.getAllCountries();
-    //for(CountryEntity country : countries) {
-    //  List<CityEntity> cities = service.getCitiesForCountry(country.getCountryCode());
-    //  for(CityEntity city : cities) {
-    //  }
-    //}
     
     System.out.println("[End]");
   }
