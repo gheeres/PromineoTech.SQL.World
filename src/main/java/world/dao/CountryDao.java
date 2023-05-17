@@ -23,7 +23,7 @@ public interface CountryDao {
    * @param countryCode The unique / internal id of the country.
    * @return The country if found, otherwise returns an empty value.
    */
-  //Optional<CountryEntity> getByCode(String countryCode);
+  CountryEntity getByCode(String countryCode);
   
   /**
    * Adds the specified country information.
@@ -38,12 +38,12 @@ public interface CountryDao {
    * @param input The country data to modify or update.
    * @return The modified or updated country if successful, false if otherwise.
    */
-  //Optional<CountryEntity> update(String countryCode, CountyInputEntity input);
+  CountryEntity update(String countryCode, CountryEntity input);
 
   /**
    * Removes the specified country from the database.
    * @param countryCode The unique / internal id of the country.
-   * @return The country if removed, otherwise returns an empty value.
+   * @return True if successful, false if otherwise.
    */
-  //Optional<CountryEntity> delete(String countryCode);
+  boolean delete(String countryCode);
 }

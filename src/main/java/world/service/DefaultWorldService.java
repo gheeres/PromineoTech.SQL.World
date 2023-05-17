@@ -2,6 +2,7 @@ package world.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 import world.dao.CityDao;
 import world.dao.CountryDao;
@@ -47,5 +48,39 @@ public class DefaultWorldService implements WorldService {
   @Override
   public List<CityEntity> getAllCities(String countryCode) {
 	return new ArrayList<CityEntity>();
+  }
+
+  @Override
+  public Optional<CountryEntity> getCountryByCode(String countryCode) {
+	CountryEntity country = countryDao.getByCode(countryCode);
+	if (country != null) {
+      return Optional.of(country); 
+	}
+	return Optional.empty();
+  }
+
+  @Override
+  public Optional<CountryEntity> updateCountry(String countryCode, CountryEntity input) {
+	if (((countryCode != null) && (! countryCode.isBlank())) &&
+		(input != null) && input.isValid()) {
+	  CountryEntity result = countryDao.update(countryCode, input);
+	  if (result != null) {
+		  return Optional.of(result);
+	  }
+	}
+	return Optional.empty();
+  }
+
+  @Override
+  public Optional<CountryEntity> deleteCountry(String countryCode) {
+	//countryDao.getByCode(countryCode);
+	Optional<CountryEntity> existing = getCountryByCode(countryCode);
+	if (existing.isPresent()) {
+	  boolean deleted = countryDao.delete(countryCode);
+      if (deleted) {
+	    return existing;
+      }
+	}
+	return Optional.empty();
   }
 }

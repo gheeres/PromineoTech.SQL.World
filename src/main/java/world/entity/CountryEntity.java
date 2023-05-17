@@ -16,6 +16,15 @@ public class CountryEntity {
     this.code = code;
   }
   
+  public CountryEntity(CountryEntity existing) {
+    // this(existing.getCode());
+	if (existing != null) {
+      code = existing.getCode();
+	  code2 = existing.getCode2();
+	  name = existing.getName();
+	}
+  }
+  
   public String getCode() {
 	return code;
   }
@@ -36,5 +45,23 @@ public class CountryEntity {
   public CountryEntity setName(String name) {
 	this.name = name;
 	return this;
+  }
+  
+  /**
+   * Checks to see if the values are correct or valid.
+   * @return True if valid, false if otherwise.
+   */
+  public boolean isValid() {
+	if (getCode() == null) return false;
+	if (getCode().isEmpty()) return false;
+	if (getCode2() == null) return false;
+	if (getCode2().isEmpty()) return false;
+	if (getName() == null) return false;
+	if (getName().isEmpty()) return false;
+	
+	return true;
+    //return (getCode() != null) && (! getCode().isBlank()) &&
+    //       (getCode2() != null) && (! getCode2().isBlank()) &&
+    //	     (getName() != null) && (! getName().isBlank());
   }
 }
