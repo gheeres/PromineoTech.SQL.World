@@ -1,12 +1,15 @@
 package world;
 
-import java.util.List;
 import java.util.Scanner;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 import world.dao.CityMySqlDao;
+import world.dao.CountryDao;
 import world.dao.CountryMySqlDao;
-import world.entity.CityEntity;
 import world.entity.CityInputEntity;
 import world.entity.CountryEntity;
+import world.service.DefaultWorldService;
+import world.service.WorldService;
 
 public class Application {
   private Scanner input = new Scanner(System.in);
@@ -40,9 +43,17 @@ public class Application {
   public void run(String[] args) {
     System.out.println("[Start]");
     
-    CountryMySqlDao countryDao = new CountryMySqlDao();
+    //CountryMySqlDao countryDao = new CountryMySqlDao();
+    CountryDao countryDao = new CountryMySqlDao(); // CountryArrayListDao();
     CityMySqlDao cityDao = new CityMySqlDao();
 
+    WorldService service = new DefaultWorldService(countryDao, cityDao);
+    Stream<CountryEntity> countries = service.getAllCountries("South America");
+    //for(CountryEntity country: countries.collect(Collectors.toList())) {
+    //  System.out.println(country.toString());
+    ///}
+    countries.forEach(country -> System.out.println(country.toString()));
+    
     /*
     System.out.println("Enter the id of the city you want to delete:");
     int id = input.nextInt();
@@ -50,6 +61,27 @@ public class Application {
     if (deletedCity != null) {
       System.out.printf("!!! DELETED !!! - [%06d] %s (%d)%n", 
                         deletedCity.getId(), deletedCity.getName(), deletedCity.getPopulation());  
+    }
+    // */
+    
+    /*
+    System.out.println("Enter the id of the city you want to update:");
+    int id = input.nextInt();
+    input.nextLine();
+    CityEntity cityToEdit = cityDao.getById(id);
+    if (cityToEdit != null) {
+      System.out.printf("New Name: [%s]%n", cityToEdit.getName());
+      String name = input.nextLine();
+      if (! name.isEmpty()) {
+        cityToEdit.setName(name);
+        CityEntity updatedCity = cityDao.update(cityToEdit.getId(), cityToEdit);
+        if (updatedCity != null) {
+          System.out.printf("[%d] %s%n", updatedCity.getId(), updatedCity.getName());
+        }
+      }
+    }
+    else {
+      System.out.printf("Requested city (%d) was not found.%n", id);
     }
     // */
     
@@ -64,7 +96,7 @@ public class Application {
     }
     // */
     
-    // /*
+    /*
     System.out.println("Enter the code for the country: [*]");
     String request = input.nextLine();
     if ((request == "*") || (request.isEmpty())) {

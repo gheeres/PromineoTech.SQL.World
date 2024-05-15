@@ -9,7 +9,7 @@ import java.util.List;
 import world.entity.CountryEntity;
 import world.exception.DbException;
 
-public class CountryMySqlDao extends MySqlDao {
+public class CountryMySqlDao extends MySqlDao implements CountryDao {
   /**
    * Serialized a ResultSet into an instance of CountryEntity
    * @param rs The ResultSet to convert.

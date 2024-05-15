@@ -44,6 +44,40 @@ public class CityMySqlDao extends MySqlDao {
   }
   
   /**
+   * Updates the specified city information.
+   * @param id The unique id of the city to modify.
+   * @param input The city data to modify or change.
+   * @return The resulting changes, null if otherwise.
+   */
+  public CityEntity update(int id, CityEntity input) {
+    final String sql = "UPDATE city SET "
+                     + "  country_code = ?, "
+                     + "  city_name = ?, "
+                     + "  city_population = ? "
+                     + "WHERE city_id = ?";
+        
+    try (Connection connection = getConnection()){
+      try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        statement.setString(1, "USA");
+        statement.setString(2, input.getName());
+        statement.setInt(3, input.getPopulation());
+        statement.setInt(4, id);
+        
+        System.out.printf("SQL: %s%n", statement.toString());
+        int rowsModified = statement.executeUpdate();
+        if (rowsModified == 1) {
+          return getById(id); 
+        }
+      }
+      return null;   
+    }
+    catch (SQLException exception) {
+      throw new DbException(String.format("A unhandled error occured. Error: %s", 
+                                          exception.getMessage()));
+    }    
+  }
+
+  /**
    * Retrieves all of the cities for the specified country code.
    * @param countryCode The unique code for the country.
    * @return The cities if found, otherwise returns an empty list.

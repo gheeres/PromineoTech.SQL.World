@@ -38,4 +38,9 @@ public class CountryEntity extends Entity {
   public void setPopulation(int population) {
     this.population = population;
   }
+  
+  @Override
+  public String toString() {
+    return String.format("[%s] %s (%d)", getCode(), getName(), getPopulation());
+  }
 }
