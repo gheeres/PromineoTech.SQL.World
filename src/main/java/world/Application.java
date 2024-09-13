@@ -2,11 +2,17 @@ package world;
 
 import java.util.List;
 import java.util.Scanner;
+import world.dao.CityDao;
+import world.dao.CityMySqlDao;
 import world.dao.CountryDao;
 import world.dao.CountryMySqlDao;
+import world.entity.CityEntity;
 import world.entity.CountryEntity;
+import world.service.DefaultWorldService;
+import world.service.WorldService;
 
 public class Application {
+  private WorldService service;
   private Scanner input = new Scanner(System.in);
   
   /**
@@ -18,6 +24,27 @@ public class Application {
   }
 
   public Application() {
+    CountryDao countryDao = new CountryMySqlDao();
+    CityDao cityDao = new CityMySqlDao();
+    service = new DefaultWorldService(countryDao, cityDao); // new CountryMySqlDao();
+  }
+  
+  /**
+   * Prompts the user to entry or select a country.
+   * @return The country that was selected.
+   */
+  public String promptForCountry() {
+    System.out.println("What country do you want to view the cities for? Enter to view all the countries.");
+    String countryCode = input.nextLine();
+    if (countryCode.isEmpty()) {
+      List<CountryEntity> countries = service.getAllCountries();
+      for(CountryEntity country : countries) {
+        System.out.println(country);
+      }
+      return promptForCountry();
+    }
+    
+    return countryCode;
   }
   
   /**
@@ -26,29 +53,18 @@ public class Application {
    */
   public void run(String[] args) {
     System.out.println("[Start]");
-    
-    System.out.println("Enter the continent: ");
-    String continent = input.nextLine();
-    
-    CountryDao countryDao = new CountryMySqlDao();
-    //List<CountryEntity> countries = countryDao.all();
-    List<CountryEntity> countries = countryDao.all(continent);
-    for(CountryEntity country: countries) {
-      // [US] United States of America (10000000)
-      System.out.printf("[%s] %s (%d)%n", country.getCode2(), country.getName(), country.getPopulation());
-    }
-    System.out.println("Count: " + countries.size());
-    
-    
-    System.out.println("Enter Country (ISO-9660 / US,USA,etc.): ");
-    String countryCode = input.nextLine();
-    CountryEntity country = countryDao.getByCode(countryCode);
-    if (country != null) {
-      System.out.printf("[%s] %s (%d)%n", country.getContinent(), country.getName(), country.getPopulation());
-    }
-    else {
-      //System.out.println("Country '" + countryCode + "' not found.");
-      System.out.printf("Country '%s' not found.%n", countryCode);
+
+    String countryCode = promptForCountry();
+    if (! countryCode.isEmpty()) {
+      CountryEntity country = service.getCountryByCode(countryCode);
+      if (country != null) {
+        System.out.println(country);
+
+        List<CityEntity> cities = service.getCitiesForCountry(country.getCode2());
+        for(CityEntity city : cities) {
+          System.out.printf(" - %s%n", city);
+        }
+      }
     }
     
     System.out.println("[End]");

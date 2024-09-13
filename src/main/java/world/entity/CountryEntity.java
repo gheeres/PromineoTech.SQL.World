@@ -42,4 +42,9 @@ public class CountryEntity {
     this.population = population;
     return this;
   }
+  
+  @Override
+  public String toString() {
+    return String.format("[%s] %s", getCode2(), getName());
+  }
 }

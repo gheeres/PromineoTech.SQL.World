@@ -1,33 +1,15 @@
 package world.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
-import world.Configuration;
 import world.entity.CountryEntity;
 import world.exception.DbException;
 
-public class CountryMySqlDao implements CountryDao {
-  //private static String connectionString = "jdbc:mysql://localhost:3306/world?user=worlduser&password=world&allowPublicKeyRetrieval=true&useSSL=false";
-  
-  public Connection getConnection() {
-    String url = Configuration.getProperty("datasource.url");
-    System.out.println("Connecting to: " + url);
-    
-    try {
-      Connection connection = DriverManager.getConnection(url);
-      return connection;
-    } catch (SQLException e) {
-      String message = String.format("Error getting connection %s. Error: %s", url, e.getMessage());
-      System.out.println(message);
-      throw new DbException(message);
-    }
-  }
-  
+public class CountryMySqlDao extends MySqlDao implements CountryDao {
   private CountryEntity toCountryEntity(ResultSet rs) throws SQLException {
     CountryEntity entity = new CountryEntity(rs.getString("Code2"), rs.getString("Name"))
                                             .setContinent(rs.getString("Continent"))
@@ -45,7 +27,7 @@ public class CountryMySqlDao implements CountryDao {
                      + "  Name";
     try (Connection connection = getConnection()) {
       try (PreparedStatement statement = connection.prepareStatement(sql)) {
-        System.out.printf("SQL: %s%n", statement.toString());
+        //System.out.printf("SQL: %s%n", statement.toString());
         
         try (ResultSet rs = statement.executeQuery()) {
           ArrayList<CountryEntity> results = new ArrayList<>();
@@ -83,7 +65,7 @@ public class CountryMySqlDao implements CountryDao {
     try (Connection connection = getConnection()) {
       try (PreparedStatement statement = connection.prepareStatement(sql)) {
         statement.setString(1, continent);
-        System.out.printf("SQL: %s%n", statement.toString());
+        //System.out.printf("SQL: %s%n", statement.toString());
         
         try (ResultSet rs = statement.executeQuery()) {
           ArrayList<CountryEntity> results = new ArrayList<>();
@@ -115,7 +97,7 @@ public class CountryMySqlDao implements CountryDao {
       try (PreparedStatement statement = connection.prepareStatement(sql)) {
         statement.setString(1, code);
         statement.setString(2, code);
-        System.out.printf("SQL: %s%n", statement.toString());
+        //System.out.printf("SQL: %s%n", statement.toString());
         
         try (ResultSet rs = statement.executeQuery()) {
           while(rs.next()) {
