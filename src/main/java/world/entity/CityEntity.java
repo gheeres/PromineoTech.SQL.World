@@ -1,6 +1,6 @@
 package world.entity;
 
-public class CityEntity {
+public class CityEntity extends Entity {
   private Integer id;
   private String name;
   private Integer population;

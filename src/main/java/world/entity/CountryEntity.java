@@ -1,6 +1,6 @@
 package world.entity;
 
-public class CountryEntity {
+public class CountryEntity extends Entity {
   private String code2;
   private String continent;
   private Integer population;
