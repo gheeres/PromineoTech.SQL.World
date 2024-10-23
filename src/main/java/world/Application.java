@@ -1,9 +1,15 @@
 package world;
 
+import java.util.List;
 import java.util.Scanner;
+import world.dao.CountryMySqlDao;
+import world.entity.CountryEntity;
+import world.service.DefaultWorldService;
+import world.service.WorldService;
 
 public class Application {
   private Scanner input = new Scanner(System.in);
+  private WorldService service;
   
   /**
    * Standard / main entry point for application.
@@ -14,6 +20,7 @@ public class Application {
   }
 
   public Application() {
+    service = new DefaultWorldService(new CountryMySqlDao());
   }
   
   /**
@@ -22,6 +29,12 @@ public class Application {
    */
   public void run(String[] args) {
     System.out.println("[Start]");
+    
+    List<CountryEntity> countries = service.getAllCountries();
+    for(CountryEntity country : countries) {
+      System.out.printf("[%s] %s%n", country.getCode(), country.getName());
+    }
+    
     System.out.println("[End]");
   }
 }
