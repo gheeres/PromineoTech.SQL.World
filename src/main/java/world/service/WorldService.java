@@ -2,6 +2,7 @@ package world.service;
 
 import java.util.List;
 import world.entity.CountryEntity;
+import world.entity.CountryInputEntity;
 
 public interface WorldService {
   /**
@@ -23,4 +24,11 @@ public interface WorldService {
    * @return An optional containing the requested country.
    */  
   CountryEntity getCountryByCode(String code);
+  
+  /**
+   * Creates a new country.
+   * @param input The new country information.
+   * @return The created country if successful, otherwise returns null.
+   */
+  CountryEntity createCountry(CountryInputEntity input);
 }

@@ -2,6 +2,7 @@ package world.dao;
 
 import java.util.List;
 import world.entity.CountryEntity;
+import world.entity.CountryInputEntity;
 
 public interface CountryDao {
   /**
@@ -16,4 +17,11 @@ public interface CountryDao {
    * @return The country if found, otherwise returns an empty value.
    */
   CountryEntity getByCode(String code);
+  
+  /**
+   * Saves or creates the country in the database.
+   * @param input The new country information.
+   * @return The created country if successful, false if otherwise.
+   */
+  CountryEntity save(CountryInputEntity input);
 }

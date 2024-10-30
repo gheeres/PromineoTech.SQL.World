@@ -4,10 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 import world.dao.CityDao;
 import world.dao.CountryDao;
-import world.dao.CountryMySqlDao;
 import world.dao.LanguageDao;
 import world.dao.WeatherDao;
 import world.entity.CountryEntity;
+import world.entity.CountryInputEntity;
+import world.exception.DbException;
 
 public class DefaultWorldService implements WorldService {
   private CountryDao countryDao;
@@ -37,6 +38,23 @@ public class DefaultWorldService implements WorldService {
 
   @Override
   public CountryEntity getCountryByCode(String code) {
-    return null;
+    if ((code == null) || (code.isEmpty())) {
+      return null;
+    }
+    
+    return countryDao.getByCode(code);
+  }
+  
+  public CountryEntity createCountry(CountryInputEntity input) {
+    if ((input == null) || (! input.isValid())) {
+      throw new DbException("Invalid or incomplete country provided.");   
+    }
+    
+    CountryEntity existing = countryDao.getByCode(input.getCode());
+    if (existing != null) {
+      throw new DbException("Specified country already exists.");
+    }
+    
+    return countryDao.save(input);
   }
 }
