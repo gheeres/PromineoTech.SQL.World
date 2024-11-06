@@ -24,4 +24,19 @@ public interface CountryDao {
    * @return The created country if successful, false if otherwise.
    */
   CountryEntity save(CountryInputEntity input);
+  
+  /**
+   * Updates or modifies the name of the country.
+   * @param code The unique / internal id of the country.
+   * @param name The new name.
+   * @return The updated country if successful, otherwise returns null.
+   */
+  CountryEntity updateName(String code, String name);
+  
+  /**
+   * Deletes the requested country.
+   * @param code The unique / internal id of the country.
+   * @return True if deleted, false if otherwise.
+   */
+  boolean delete(String code);
 }

@@ -6,6 +6,7 @@ import world.dao.CityDao;
 import world.dao.CountryDao;
 import world.dao.LanguageDao;
 import world.dao.WeatherDao;
+import world.entity.CityEntity;
 import world.entity.CountryEntity;
 import world.entity.CountryInputEntity;
 import world.exception.DbException;
@@ -56,5 +57,41 @@ public class DefaultWorldService implements WorldService {
     }
     
     return countryDao.save(input);
+  }
+
+  @Override
+  public CountryEntity setCountryName(String code, String name) {
+    if ((name == null) || (name.isEmpty())) {
+      throw new DbException("Invalid or empty country name provided. Name is required.");   
+    }
+    
+    CountryEntity existing = countryDao.getByCode(code);
+    if (existing == null) {
+      throw new DbException("Specified country does not exist.");
+    }
+    
+    return countryDao.updateName(code, name);
+  }
+
+  @Override
+  public CountryEntity deleteCountry(String code) {
+    CountryEntity existing = countryDao.getByCode(code);
+    if (existing == null) {
+      throw new DbException("Specified country does not exist.");
+    }
+    
+    if (countryDao.delete(existing.getCode())) {
+      return existing;
+    }
+    return null;
+  }
+
+  @Override
+  public List<CityEntity> getAllCities(String code) {
+    if ((code == null) || (code.isEmpty())) {
+      return new ArrayList<>();
+    }
+    
+    return cityDao.all(code);
   }
 }

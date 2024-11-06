@@ -5,7 +5,7 @@ package world.entity;
  */
 public class CityEntity {
   private Long id;
-  private String country;
+  private CountryEntity country;
   private String name;
   private Double latitude;
   private Double longitude;
@@ -17,7 +17,7 @@ public class CityEntity {
    * @param country The ISO3316 code for the country that the city resides in.
    * @param name The name of the city.
    */
-  public CityEntity(Long id, String country, String name) {
+  public CityEntity(Long id, CountryEntity country, String name) {
     setId(id);
     setCountry(country);
     setName(name);
@@ -29,10 +29,10 @@ public class CityEntity {
   public void setId(Long id) {
     this.id = id;
   }
-  public String getCountry() {
+  public CountryEntity getCountry() {
     return country;
   }
-  public void setCountry(String country) {
+  public void setCountry(CountryEntity country) {
     this.country = country;
   }
   public String getName() {

@@ -12,38 +12,7 @@ import world.entity.CountryEntity;
 import world.entity.CountryInputEntity;
 import world.exception.DbException;
 
-public class CountryMySqlDao implements CountryDao {
-  /**
-   * Gets the connection to the database.
-   * @return The connection.
-   */
-  public Connection getConnection() {
-    String url = Configuration.getProperty("datasource.url");
-    try {
-      Connection connection = DriverManager.getConnection(url);
-      return connection;
-    } catch (SQLException e) {
-      String message = String.format("Error getting connection: %s. Error: %s",
-                                     url, e.getMessage());
-      System.out.println(message);
-      throw new DbException(message, e);
-    }
-  }
-  
-  private CountryEntity toCountryEntity(ResultSet rs) {
-    try {
-      CountryEntity country = new CountryEntity(rs.getString("country_code"),
-                                                 rs.getString("country_code2"), 
-                                                 rs.getString("country_name"));
-      country.setContinent(rs.getString("continent"));
-      country.setPopulation(rs.getLong("country_population"));
-      return country;
-      
-    } catch (SQLException e) {
-    }
-    return null;
-  }
-  
+public class CountryMySqlDao extends MySqlDao implements CountryDao {
   @Override
   public List<CountryEntity> all() {
     String sql = "SELECT country_code, country_code2, country_name, continent, country_population "
@@ -119,5 +88,48 @@ public class CountryMySqlDao implements CountryDao {
       throw new DbException(e);
     }
   }
-  
+
+  @Override
+  public CountryEntity updateName(String code, String name) {
+    if ((name == null) || (name.isEmpty())) {
+      throw new DbException("Invalid or missing country name. Name is required.");
+    }
+    
+    String sql = "UPDATE country SET country_name = ? WHERE country_code = ? OR country_code2 = ?";
+    try (Connection connection = getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        System.out.printf("SQL: %s%n", statement.toString());
+        statement.setString(1, name);
+        statement.setString(2, code);
+        statement.setString(3, code);
+        
+        int rows = statement.executeUpdate();
+        if (rows == 1) {
+          return getByCode(code);
+        }
+        
+        return null;
+      }
+    }
+    catch(SQLException e) {
+      throw new DbException(e);
+    }
+  }
+
+  @Override
+  public boolean delete(String code) {
+    String sql = "DELETE FROM country WHERE country_code = ?;";
+    try (Connection connection = getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        System.out.printf("SQL: %s%n", statement.toString());
+        statement.setString(1, code);
+        
+        int rows = statement.executeUpdate();
+        return (rows == 1);
+      }
+    }
+    catch(SQLException e) {
+      throw new DbException(e);
+    }
+  }
 }
