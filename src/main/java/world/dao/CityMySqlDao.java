@@ -5,8 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
+import java.util.stream.Stream;
 import world.entity.CityEntity;
+import world.entity.CityInputEntity;
 import world.exception.DbException;
 
 public class CityMySqlDao extends MySqlDao implements CityDao {
@@ -25,8 +26,37 @@ public class CityMySqlDao extends MySqlDao implements CityDao {
   }
   
   
+  public CityEntity getById(int id) {
+    String sql = "SELECT city.city_id, city.country_code, city.city_name, "
+               + "       city.latitude, city.longitude, city.city_name, city.city_population, "
+               + "       country.country_code2, country.country_name, country.continent, country.country_population "
+               + "FROM "
+               + "  city "
+               + "  INNER JOIN country "
+               + "  ON city.country_code = country.country_code "
+               + "WHERE city.city_id = ?;";
+    try (Connection connection = getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(sql)) {
+        statement.setInt(1, id);
+        
+        try(ResultSet rs = statement.executeQuery() ) {
+          if(rs.next()) {
+            CityEntity city = toCityEntity(rs);
+            if (city != null) {
+              return city;
+            }
+          }
+          return null;
+        }
+      }
+    }
+    catch (SQLException exception) {
+      throw new DbException(exception);
+    }
+  }
+  
   @Override
-  public List<CityEntity> all(String code) {
+  public Stream<CityEntity> all(String code) {
     String sql = "SELECT city.city_id, city.country_code, city.city_name, "
                + "       city.latitude, city.longitude, city.city_name, city.city_population, "
                + "       country.country_code2, country.country_name, country.continent, country.country_population "
@@ -49,8 +79,37 @@ public class CityMySqlDao extends MySqlDao implements CityDao {
               cities.add(city);
             }
           }
-          return cities;
+          return cities.stream();
         }
+      }
+    }
+    catch (SQLException exception) {
+      throw new DbException(exception);
+    }
+  }
+
+
+  @Override
+  public CityEntity save(CityInputEntity input) {
+    String sql = "INSERT INTO city (country_code, latitude, longitude, city_population, city_name) " +
+                 "VALUES (?, ?, ?, ?, ?);";
+    try (Connection connection = getConnection()) {
+      try (PreparedStatement statement = connection.prepareStatement(sql, java.sql.Statement.RETURN_GENERATED_KEYS)) {
+        statement.setString(1, input.getCountry());
+        statement.setDouble(2, input.getLatitude());
+        statement.setDouble(3, input.getLongitude());
+        statement.setLong(4, input.getPopulation());
+        statement.setString(5, input.getName());
+        
+        int rows = statement.executeUpdate();
+        if (rows == 1) {
+          ResultSet keys = statement.getGeneratedKeys();
+          if(keys.next()) {
+            int id = keys.getInt(1);
+            return getById(id);
+          }
+        }
+        return null;
       }
     }
     catch (SQLException exception) {

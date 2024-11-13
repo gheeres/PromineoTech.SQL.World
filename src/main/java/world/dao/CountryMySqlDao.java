@@ -1,20 +1,18 @@
 package world.dao;
 
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
-import java.util.List;
-import world.Configuration;
+import java.util.stream.Stream;
 import world.entity.CountryEntity;
 import world.entity.CountryInputEntity;
 import world.exception.DbException;
 
 public class CountryMySqlDao extends MySqlDao implements CountryDao {
   @Override
-  public List<CountryEntity> all() {
+  public Stream<CountryEntity> all() {
     String sql = "SELECT country_code, country_code2, country_name, continent, country_population "
                + "FROM country;";
     
@@ -28,7 +26,7 @@ public class CountryMySqlDao extends MySqlDao implements CountryDao {
               countries.add(country);
             }
           }
-          return countries;
+          return countries.stream();
         }
       }
     } catch (SQLException e) {

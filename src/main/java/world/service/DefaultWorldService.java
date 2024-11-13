@@ -2,11 +2,13 @@ package world.service;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 import world.dao.CityDao;
 import world.dao.CountryDao;
 import world.dao.LanguageDao;
 import world.dao.WeatherDao;
 import world.entity.CityEntity;
+import world.entity.CityInputEntity;
 import world.entity.CountryEntity;
 import world.entity.CountryInputEntity;
 import world.exception.DbException;
@@ -29,7 +31,8 @@ public class DefaultWorldService implements WorldService {
   public List<CountryEntity> getAllCountries() {
     // List<CountryEntity> countries = countryDao.all();
     // return countries;
-    return countryDao.all();
+    return countryDao.all()
+                     .collect(Collectors.toList());
   }
 
   @Override
@@ -92,6 +95,17 @@ public class DefaultWorldService implements WorldService {
       return new ArrayList<>();
     }
     
-    return cityDao.all(code);
+    return cityDao.all(code)
+                  .filter(city -> city.getPopulation() >= 1000000)
+                  .collect(Collectors.toList());
+  }
+
+  @Override
+  public CityEntity createCity(CityInputEntity input) {
+    if ((input == null) || (! input.isValid())) {
+      return null;
+    }
+    
+    return cityDao.save(input);
   }
 }

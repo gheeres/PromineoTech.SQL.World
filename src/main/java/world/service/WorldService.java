@@ -2,6 +2,7 @@ package world.service;
 
 import java.util.List;
 import world.entity.CityEntity;
+import world.entity.CityInputEntity;
 import world.entity.CountryEntity;
 import world.entity.CountryInputEntity;
 
@@ -54,4 +55,11 @@ public interface WorldService {
    * @return The cities.
    */
   List<CityEntity> getAllCities(String code);
+  
+  /**
+   * Creates a new city.
+   * @param input The new city information.
+   * @return The created city if successful, otherwise returns null.
+   */
+  CityEntity createCity(CityInputEntity input);  
 }

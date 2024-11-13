@@ -1,6 +1,6 @@
 package world.dao;
 
-import java.util.List;
+import java.util.stream.Stream;
 import world.entity.CountryEntity;
 import world.entity.CountryInputEntity;
 
@@ -9,7 +9,7 @@ public interface CountryDao {
    * Retrieves all of the countries.
    * @return All of the available countries.
    */
-  List<CountryEntity> all();
+  Stream<CountryEntity> all();
   
   /**
    * Retrieves the requested country by it's unique identifier.

@@ -5,6 +5,7 @@ import java.util.Scanner;
 import world.dao.CityMySqlDao;
 import world.dao.CountryMySqlDao;
 import world.entity.CityEntity;
+import world.entity.CityInputEntity;
 import world.entity.CountryEntity;
 import world.service.DefaultWorldService;
 import world.service.WorldService;
@@ -88,6 +89,25 @@ public class Application {
                           city.getName(), city.getLatitude(), city.getLongitude(),
                           city.getPopulation(), city.getCountry().getPopulation(),
                           ((double) city.getPopulation() / city.getCountry().getPopulation()) * 100.0);
+      }
+      
+     
+      System.out.println("Do you want to add a new city? Y/N");
+      String newCityResponse = input.nextLine();
+      if ("y".contentEquals(newCityResponse)) {
+        System.out.println("What is the name of the city?");
+        String cityName = input.nextLine();
+        
+        CityInputEntity inputCity = new CityInputEntity(countryCode, cityName);
+        inputCity.setLatitude(1.0);
+        inputCity.setLongitude(1.0);
+        inputCity.setPopulation(1L);
+        
+        CityEntity newCity = service.createCity(inputCity);
+        if (newCity != null) {
+          System.out.println("Created new city.");
+          System.out.printf(" + %s (%d)%n", newCity.getName(), newCity.getId());
+        }
       }
     }
     
