@@ -1,6 +1,9 @@
 package world;
 
 import java.util.Scanner;
+import world.entity.CountryEntity;
+import world.service.DefaultWorldService;
+import world.service.WorldService;
 
 public class Application {
   private Scanner input = new Scanner(System.in);
@@ -22,6 +25,15 @@ public class Application {
    */
   public void run(String[] args) {
     System.out.println("[Start]");
+    
+    WorldService service = new DefaultWorldService();
+    CountryEntity countryToCreate = new CountryEntity("USA", "United States of America");
+    countryToCreate.setCode2("US");
+    countryToCreate.setPopulation(320000000L);
+    
+    CountryEntity country = service.createCountry(countryToCreate);
+    
+    
     System.out.println("[End]");
   }
 }
